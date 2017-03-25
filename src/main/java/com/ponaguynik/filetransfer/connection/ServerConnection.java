@@ -43,7 +43,7 @@ class ServerConnection extends Connection {
     }
 
     /**
-     * Interrupt the connection while connecting.
+     * Interrupt the connection attempt.
      * Connection has not to be established.
      */
     @Override

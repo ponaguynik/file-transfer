@@ -3,6 +3,7 @@ package com.ponaguynik.filetransfer;
 import com.ponaguynik.filetransfer.connection.Connection;
 import com.ponaguynik.filetransfer.connection.ConnectionFactory;
 import com.ponaguynik.filetransfer.connection.ConnectionType;
+import com.ponaguynik.filetransfer.exception.ReportException;
 
 import java.io.*;
 import java.util.Arrays;
@@ -13,7 +14,6 @@ public class FileTransfer {
     private static final int SOCKET_PORT = 49200;
 
     private static Connection connection;
-
 
     public static void main(String... args) {
         String checkString = checkArgs(args);
@@ -104,6 +104,8 @@ public class FileTransfer {
                 System.out.println(fileName + " has been successfully sent to " + ip);
             } catch (IOException ioe) {
                 System.out.println(ioe.getMessage());
+            } catch (ReportException re) {
+                System.out.println("Failed to send the file because of problems on the receiver side");
             } catch (Exception e) {
                 System.out.println("Failed to send the file " + fileName + " to " + ip);
             }
@@ -131,6 +133,8 @@ public class FileTransfer {
                 System.out.println(fileName + " has been stored to " + storagePath);
             } catch (IOException e) {
                 System.out.println(e.getMessage() + ": " + storagePath);
+            } catch (ReportException re) {
+                System.out.println("Failed to receive the file because of problems on the sender side");
             } catch (Exception e) {
                 System.out.println("Failed to receive a file");
             }

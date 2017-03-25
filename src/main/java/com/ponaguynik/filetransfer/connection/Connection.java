@@ -40,7 +40,7 @@ public abstract class Connection {
     }
 
     /**
-     * Interrupt a connection attempt.
+     * Interrupt the connection attempt.
      * Connection has not to be established.
      */
     public abstract void interrupt() throws IOException;

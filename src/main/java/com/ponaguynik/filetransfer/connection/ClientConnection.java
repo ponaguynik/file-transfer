@@ -40,7 +40,7 @@ class ClientConnection extends Connection {
     }
 
     /**
-     * Interrupt a connection attempt.
+     * Interrupt the connection attempt.
      * Connection has not to be established.
      */
     @Override
