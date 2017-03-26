@@ -26,36 +26,34 @@ public class Receiver {
      * that connected to the sender.
      * Gets number of files that will be sent.
      */
-    public Receiver(Connection connection) {
+    public Receiver(Connection connection) throws IOException {
         if (connection.isClosed())
-            throw new RuntimeException("Connection is not established or closed");
+            throw new IOException("Connection is not established or closed");
 
         this.connection = connection;
 
-        try {
-            output = new ObjectOutputStream(connection.getOutputStream());
-            input = new ObjectInputStream(connection.getInputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        output = new ObjectOutputStream(connection.getOutputStream());
+        input = new ObjectInputStream(connection.getInputStream());
 
         try {
             fileCount = (int) input.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new IOException(e);
         }
     }
 
     /**
      * Receive file from the sender.
      *
-     * @param path absolute or relative path to a
-     *             folder where a file should be stored.
+     * @param directory where to store the files.
      * @return name of received file.
      */
-    public String receive(String path) throws IOException, ReportException {
+    public String receive(File directory) throws IOException, ReportException {
         if (connection.isClosed())
             throw new IOException("Connection is closed");
+
+        if (directory.isFile())
+            throw new IOException("Cannot store file in file");
 
         //Wait report whether the sender is ready to send a file
         if (!waitReport()) {
@@ -69,7 +67,7 @@ public class Receiver {
         } catch (ClassNotFoundException ignore) {}
 
 
-        File file = createFile(path, fileName);
+        File file = createFile(directory, fileName);
 
         //Send report whether receiver is ready to get a file
         if (file != null) {
@@ -91,8 +89,8 @@ public class Receiver {
         return fileName;
     }
 
-    private File createFile(String path, String fileName) throws IOException {
-        File file = new File(path + File.separator + fileName);
+    private File createFile(File directory, String fileName) throws IOException {
+        File file = new File(directory.getAbsolutePath() + File.separator + fileName);
         try {
             if (!file.createNewFile())
                 return null;

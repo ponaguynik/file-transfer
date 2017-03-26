@@ -53,4 +53,8 @@ public abstract class Connection {
         return output;
     }
 
+    public String getIp() {
+        return ip;
+    }
+
 }

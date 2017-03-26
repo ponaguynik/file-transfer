@@ -1,11 +1,15 @@
 package com.ponaguynik.filetransfer;
 
+import com.ponaguynik.filetransfer.connection.Connection;
+import com.ponaguynik.filetransfer.connection.ConnectionFactory;
+import com.ponaguynik.filetransfer.connection.ConnectionType;
 import org.junit.Test;
 import org.junit.experimental.ParallelComputer;
 import org.junit.runner.JUnitCore;
 
 
 import java.io.File;
+import java.io.IOException;
 
 import static org.junit.Assert.*;
 
@@ -35,16 +39,44 @@ public class FileTransferTest {
     }
 
     @Test
-    public void send() {
-        FileTransfer.send(new String[]{"send", "127.0.0.1", "src/test/resources/test-text.txt",
-                "src/test/resources/test-img.png"});
+    public void send() throws IOException {
+        String ip = "127.0.2.1";
+        File[] files = new File[2];
+        files[0] = new File("src/test/resources/test-text.txt");
+        files[1] = new File("src/test/resources/test-img.png");
+
+        Connection connection = ConnectionFactory.getConnection(ConnectionType.CLIENT, ip, 48200);
+        assert connection != null;
+        connection.connect();
+
+        FileTransfer.send(connection, files);
     }
 
     @Test
-    public void receive() {
+    public void receive() throws IOException {
         deleteTestFiles();
-        FileTransfer.receive("127.0.0.1", "src/test/resources/destination");
+        String ip = "127.0.0.1";
+        File directory = new File("src/test/resources/destination");
 
+        Connection connection = ConnectionFactory.getConnection(ConnectionType.SERVER, ip, 48200);
+        assert connection != null;
+        connection.connect();
+
+        FileTransfer.receive(connection, directory);
+    }
+
+    @Test
+    public void testMainSend() {
+        String[] args = {"send", "127.0.0.1", "src/test/resources/test-text.txt",
+                "src/test/resources/test-img.png"};
+        FileTransfer.main(args);
+    }
+
+    @Test
+    public void testMainReceive() {
+        deleteTestFiles();
+        String[] args = {"receive", "127.0.2.1", "src/test/resources/destination"};
+        FileTransfer.main(args);
     }
 
     private void deleteTestFiles() {

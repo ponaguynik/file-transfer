@@ -24,44 +24,39 @@ public class Sender {
      * @param fileCount is passing to the receiver to know
      *                  how many files will be sent.
      */
-    public Sender(Connection connection, int fileCount) {
+    public Sender(Connection connection, int fileCount) throws IOException {
         if (connection.isClosed())
-            throw new RuntimeException("Connection is not established or closed");
+            throw new IOException("Connection is not established or closed");
 
         this.connection = connection;
 
-        try {
-            input = new ObjectInputStream(connection.getInputStream());
-            output = new ObjectOutputStream(connection.getOutputStream());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        input = new ObjectInputStream(connection.getInputStream());
+        output = new ObjectOutputStream(connection.getOutputStream());
 
-        try {
-            output.writeObject(fileCount);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        output.writeObject(fileCount);
     }
 
     /**
      * Send file to the receiver.
      *
-     * @param path absolute or relative path to a file.
+     * @param file to send.
      */
-    public void send(String path) throws IOException, ReportException {
+    public void send(File file) throws IOException, ReportException {
         if (connection.isClosed())
             throw new IOException("Connection is closed");
 
-        //Check file for existence and extract file name
-        String fileName = extractFileName(path);
+        if (file.isDirectory())
+            throw new IOException("Cannot send directory");
 
-        if (fileName != null)
+        //Check file for existence and send report
+        if (file.exists())
             sendReport(true);
         else {
             sendReport(false);
-            throw new IOException("File does not exist: " + path);
+            throw new IOException("File does not exist: " + file.getAbsolutePath());
         }
+
+        String fileName = file.getName();
 
         //Send file name to the receiver
         output.writeObject(fileName);
@@ -72,25 +67,17 @@ public class Sender {
         }
 
         //Send the file and report
-        sendFile(path);
+        sendFile(file);
 
         //Wait report whether receiver has got the file
         if (!waitReport()) {
             throw new ReportException();
         }
     }
-    
-    private String extractFileName(String path) {
-        String[] splitPath = path.split("/");
-        String fileName = splitPath[splitPath.length-1];
-        File file = new File(path);
 
-        return file.exists() ? fileName : null;
-    }
-
-    private void sendFile(String path) throws IOException {
+    private void sendFile(File file) throws IOException {
         try (
-                BufferedInputStream fileInput = new BufferedInputStream(new FileInputStream(path))
+                BufferedInputStream fileInput = new BufferedInputStream(new FileInputStream(file))
         ) {
             byte[] data = new byte[fileInput.available()];
             fileInput.read(data);

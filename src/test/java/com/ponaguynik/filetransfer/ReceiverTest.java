@@ -5,6 +5,8 @@ import com.ponaguynik.filetransfer.connection.ConnectionFactory;
 import com.ponaguynik.filetransfer.connection.ConnectionType;
 import org.junit.Test;
 
+import java.io.File;
+
 public class ReceiverTest {
 
     //Uncomment this code to test receive()
@@ -15,8 +17,8 @@ public class ReceiverTest {
         assert connection != null;
         connection.connect();
         Receiver receiver = new Receiver(connection);
-        receiver.receive("src/test/resources/destination");
-        receiver.receive("src/test/resources/destination");
+        receiver.receive(new File("src/test/resources/destination"));
+        receiver.receive(new File("src/test/resources/destination"));
         connection.close();
     }
 

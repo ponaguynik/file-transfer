@@ -18,8 +18,8 @@ public class SenderTest {
         assert connection != null;
         connection.connect();
         Sender sender = new Sender(connection, 1);
-        sender.send("src/test/resources/test-img.png");
-        sender.send("src/test/resources/test-text.txt");
+        sender.send(new File("src/test/resources/test-img.png"));
+        sender.send(new File("src/test/resources/test-text.txt"));
         connection.close();
     }
 
