@@ -9,7 +9,7 @@ Java 8, Apache Maven
 ### Build
 Clone the repository:
 
-`git clone https://github.com/ponaguynik/file-transfer-sockets.git`
+`git clone https://github.com/ponaguynik/file-transfer.git`
 
 Build with maven:
 
