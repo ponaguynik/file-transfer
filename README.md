@@ -1,6 +1,6 @@
 # FileTransfer
 
-FileTransfer is a platform independent console application. It is used for transferring files between two devices through local 
+FileTransfer is a platform-independent console application. It is used for file transfering between two devices through local 
 network by ip and port. 
 
 ## Getting Started
